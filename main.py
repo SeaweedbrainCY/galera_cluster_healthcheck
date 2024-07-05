@@ -60,14 +60,14 @@ def log_message(error_msg, is_error=True,fatal=False, include_status=False):
 
 def log_last_notif_date(is_error):
         status = "error" if is_error else "normal"
-        with open('last_error_date.log', 'w') as f:
+        with open('logs/last_error_date.log', 'w') as f:
             f.write(f"{datetime.now()},{status}")
 
 def get_last_notif_date():
-    if not os.path.isfile('last_error_date.log'):
+    if not os.path.isfile('logs/last_error_date.log'):
         return "2001-01-01 01:01:01.0000" , "normal" # default value
 
-    with open('last_error_date.log', 'r') as f:
+    with open('logs/last_error_date.log', 'r') as f:
         log = f.read()
     return log.split(',')[0], log.split(',')[1]
 
@@ -117,7 +117,7 @@ if __name__ == "__main__":
             try:
                 size = size[1]
                 if int(size) < int(CLUSTER_MIN_SIZE):
-                    STATUS["cluster_size"]["msg"] = f"Cluster size is less than expected. Was expecting {CLUSTER_MIN_SIZE} nodes, but only {size} are available"
+                    STATUS["cluster_size"]["msg"] = f"ERROR. Cluster size is less than expected. Was expecting {CLUSTER_MIN_SIZE} nodes, but only {size} are available"
                     IS_ON_ERROR = True
                 else:
                     STATUS["cluster_size"]["msg"] = f"Cluster has {size} nodes. This is the expected size."
@@ -135,7 +135,7 @@ if __name__ == "__main__":
                 STATUS["cluster_status"]["msg"] = f"Error while parsing cluster status: {e}"
                 IS_ON_ERROR = True
             if quorum_status != "Primary":
-                STATUS["cluster_status"]["msg"] = f"Cluster is not in primary state. Got {quorum_status} state. This means that the cluster is partitioned and {NODE_NAME} separated of others."
+                STATUS["cluster_status"]["msg"] = f"ERROR. Cluster is not in primary state. Got {quorum_status} state. This means that the cluster is partitioned and {NODE_NAME} separated of others."
                 IS_ON_ERROR = True
             else:
                STATUS["cluster_status"]["msg"] = f"Cluster is in primary state. {NODE_NAME} is connected to the others."
@@ -150,10 +150,10 @@ if __name__ == "__main__":
                 STATUS["node_status"]["msg"] = f"Error while parsing node status: {e}"
                 IS_ON_ERROR = True
             if node_status != "Synced":
-                STATUS["node_status"]["msg"] = f"{NODE_NAME} is not synced, and in a transitionary state. {NODE_NAME} is {node_status}"
+                STATUS["node_status"]["msg"] = f"ERROR. {NODE_NAME} is not synced, and in a transitionary state. {NODE_NAME} is {node_status}"
                 IS_ON_ERROR = True
             elif node_status == "Initialized":
-                STATUS["node_status"]["msg"] = f"{NODE_NAME} is not synced. {NODE_NAME} is {node_status}. {NODE_NAME} is NOT operational."
+                STATUS["node_status"]["msg"] = f"ERROR. {NODE_NAME} is not synced. {NODE_NAME} is {node_status}. {NODE_NAME} is NOT operational."
                 IS_ON_ERROR = True
             else:
                 STATUS["node_status"]["msg"] = f"{NODE_NAME} is synced."
@@ -168,7 +168,7 @@ if __name__ == "__main__":
                 STATUS["node_connectivity"]["msg"] = f"Error while parsing node connectivity: {e}"
                 IS_ON_ERROR = True
             if node_connectivity != "ON":
-                STATUS["node_connectivity"]["msg"] = f"{NODE_NAME} is not connected to the cluster. {NODE_NAME} is {node_connectivity}"
+                STATUS["node_connectivity"]["msg"] = f"ERROR. {NODE_NAME} is not connected to the cluster. {NODE_NAME} is {node_connectivity}"
                 IS_ON_ERROR = True
             else:
                 STATUS["node_connectivity"]["msg"] = f"{NODE_NAME} is connected to the cluster."
