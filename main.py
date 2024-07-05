@@ -106,6 +106,7 @@ if __name__ == "__main__":
             node_connectivity = cur.fetchone()
             cur.execute("SHOW GLOBAL STATUS LIKE 'wsrep_incoming_addresses';")
             incoming_addresses = cur.fetchone()
+            conn.close()
         except Exception as e:
             log_message(f"Error while fetching data: {e}", fatal=True)
 
