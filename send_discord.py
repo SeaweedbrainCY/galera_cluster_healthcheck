@@ -1,8 +1,15 @@
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
 from datetime import datetime
+import sys
 
-WEBHOOK_URL = os.environ['WEBHOOK_URL']
+try:
+    WEBHOOK_URL = os.environ['WEBHOOK_URL']
+except Exception as e :
+    print("Error while fetching environment variables. Exiting.")
+    print("Required variables are : DB_USER, DB_PASSWORD, DB_HOST, NODE_NAME, CLUSTER_MIN_SIZE")
+    print(f"Error : {e}")
+    sys.exit(1)
 
 
 def send(error_msg, include_status, status, is_error):
@@ -21,7 +28,7 @@ def send(error_msg, include_status, status, is_error):
     embed = DiscordEmbed(title=title, description=description, color=color)
     if include_status:
         for key in status:
-            embed.add_embed_field(name=key, value=status[key]['msg'])
+            embed.add_embed_field(name=key, value=status[key]['msg'], inline=False)
     webhook.add_embed(embed)
     response = webhook.execute()
     print(f"{datetime.now()} : Discord answered {response}")
