@@ -8,9 +8,10 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get clean
 
-
+WORKDIR /app
+RUN COPY ./requirements.txt /app/requirements.txt
 # Install python dependencies
-RUN pip install discord-webhook  mariadb
+RUN pip install -r requirements.txt
 
 # Move scripts
 RUN mkdir -p /app/logs  
@@ -18,7 +19,7 @@ RUN mkdir -p /app/logs
 COPY ./main.py /app/main.py
 COPY ./send_discord.py /app/send_discord.py
 
-WORKDIR /app
+
 
 # Run the script
 ENTRYPOINT ["python3" ,"-u", "main.py"]
