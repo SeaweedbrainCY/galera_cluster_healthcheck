@@ -1,5 +1,10 @@
 # Galera Cluster Healthcheck
+<div align="center">
+ <img src="https://github.com/SeaweedbrainCY/galera_cluster_healthcheck/actions/workflows/deploy.yml/badge.svg/"> <img src="https://github.com/SeaweedbrainCY/galera_cluster_healthcheck/actions/workflows/security_scan.yml/badge.svg/"> <img src="https://img.shields.io/github/v/tag/SeaweedbrainCY/galera_cluster_healthcheck"/> <img src="https://img.shields.io/github/license/seaweedbraincy/galera_cluster_healthcheck"/>
+</div>
+<br>
 This is a very basic docker container that helthcheck the nodes of a Mariadb Galera Cluster. 
+
 
 **Contributors :**
 
