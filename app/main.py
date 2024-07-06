@@ -50,7 +50,7 @@ def log_message(error_msg, is_error=True,fatal=False, include_status=False):
         print(f"{datetime.now()} : New status : {STATUS}")
     else:
         if  is_error:
-            print(f"{datetime.now()} : Cluster still in error state. No notification sent because of treshold.")
+            print(f"{datetime.now()} : Cluster still in error state. No notification sent because of alert throttle.")
         else :
             print(f"{datetime.now()} : Cluster health is normal. All checks passed. Next check in {CHECK_INTERVAL} seconds.")
     if fatal:
