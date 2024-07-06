@@ -5,7 +5,7 @@ on:
      tags: [ '*.*' ]
 
 env:
-    DOCKER_IMAGE_NAME: "galera_healthcheck"
+    DOCKER_IMAGE_NAME: "galera-healthcheck"
 jobs:
   build-and-publish-image:
     name: Build and Publish Docker image
@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      working-directory: ./
+      working-directory: ./app
       run: docker build -t $DOCKER_IMAGE_NAME:latest -t $DOCKER_IMAGE_NAME:$current_version .
     - name: Login to GitHub Container Registry
       run: echo ${{ secrets.TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
