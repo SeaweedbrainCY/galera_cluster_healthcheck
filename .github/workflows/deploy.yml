@@ -7,6 +7,8 @@ on:
 env:
     DOCKER_IMAGE_NAME: "galera_cluster_healthcheck"
 jobs:
+  security_scan:
+    uses: ./.github/workflows/security_scan.yml 
   build-and-publish-image:
     name: Build and Publish Docker image
     runs-on: ubuntu-latest
