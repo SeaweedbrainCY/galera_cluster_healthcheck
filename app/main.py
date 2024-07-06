@@ -3,7 +3,7 @@ import sys
 import os
 from time import sleep
 from datetime import datetime
-import send_discord
+import send_discord as send_discord
 
 try:
     DB_USER = os.environ['DB_USER']

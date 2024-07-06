@@ -1,0 +1,28 @@
+name: Deploy to GitHub Container Registry
+
+on:
+  push:
+     tags: [ '*.*' ]
+
+env:
+    API_IMAGE_NAME: "api_bad_cors"
+    FRONTEND_IMAGE_NAME: "frontend_bad_cors"
+    API_SAFE_IMAGE_NAME: "safe_api_bad_cors"
+
+jobs:
+  build-and-publish-image:
+    name: Build and Publish Docker image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      working-directory: ./
+      run: docker build -t $API_IMAGE_NAME:latest -t $API_IMAGE_NAME:${{ github.sha }} .
+    - name: Login to GitHub Container Registry
+      run: echo ${{ secrets.TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+            docker tag $API_IMAGE_NAME:latest ghcr.io/${{ secrets.USERNAME }}/$API_IMAGE_NAME:latest
+            docker tag $API_IMAGE_NAME:${{ github.sha }} ghcr.io/${{ secrets.USERNAME }}/$API_IMAGE_NAME:${{ github.sha }}
+            docker push ghcr.io/${{ secrets.USERNAME }}/$API_IMAGE_NAME:latest
+            docker push ghcr.io/${{ secrets.USERNAME }}/$API_IMAGE_NAME:${{ github.sha }}
