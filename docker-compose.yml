@@ -3,7 +3,7 @@ version: '3.7'
 services:
   galera_health_check:
     container_name: galera_health_check
-    image: ghcr.io/seaweedbraincy/galera_cluster_healthcheck:b0.3
+    image: ghcr.io/seaweedbraincy/galera_cluster_healthcheck:latest
     user: 1000:1000
     security_opt:
       - no-new-privileges:true
