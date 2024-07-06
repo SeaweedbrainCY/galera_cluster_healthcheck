@@ -11,7 +11,7 @@ try:
     DB_HOST = os.environ['DB_HOST'] 
     DB_PORT = os.environ['DB_PORT'] if 'DB_PORT' in os.environ else 3306
     CHECK_INTERVAL = os.environ['CHECK_INTERVAL'] if 'CHECK_INTERVAL' in os.environ else 60
-    ALERT_THRESHOLD = int(os.environ['ALERT_THRESHOLD']) if 'ALERT_THRESHOLD' in os.environ else 10800 #3h in seconds
+    ALERT_THROTTLE = int(os.environ['ALERT_THROTTLE']) if 'ALERT_THROTTLE' in os.environ else 10800 #3h in seconds
     NODE_NAME = os.environ['NODE_NAME'] 
     CLUSTER_MIN_SIZE = os.environ['CLUSTER_MIN_SIZE'] 
 except Exception as e :
@@ -76,7 +76,7 @@ def can_fire_alert(is_error):
     was_last_notif_error = status == "error"
     last_notif_date = datetime.strptime(last_notif_date, '%Y-%m-%d %H:%M:%S.%f')
     current_date = datetime.now()
-    return ((current_date - last_notif_date).seconds > ALERT_THRESHOLD and is_error) or was_last_notif_error != is_error 
+    return ((current_date - last_notif_date).seconds > ALERT_THROTTLE and is_error) or was_last_notif_error != is_error 
 
 
 if __name__ == "__main__":
