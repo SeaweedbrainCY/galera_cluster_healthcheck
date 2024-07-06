@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libmariadb3 \
     libmariadb-dev \
     gcc 
@@ -12,6 +12,9 @@ WORKDIR /app
 RUN COPY ./requirements.txt /app/requirements.txt
 # Install python dependencies
 RUN pip install -r requirements.txt
+
+# Define non-root user
+USER nobody
 
 # Move scripts
 RUN mkdir -p /app/logs  

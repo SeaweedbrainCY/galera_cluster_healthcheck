@@ -4,6 +4,7 @@ services:
   galera_health_check:
     container_name: galera_health_check
     image: ghcr.io/seaweedbraincy/galera_cluster_healthcheck:b0.3
+    user: 1000:1000
     environment:
        DB_USER: <REPLACE_ME> # required
        DB_PASSWORD: <REPLACE_ME> # required
