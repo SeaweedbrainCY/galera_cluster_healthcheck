@@ -17,6 +17,9 @@ This is a very basic docker container that helthcheck the nodes of a Mariadb Gal
 - [Installation](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#installation)
    - [Docker compose](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#docker-compose)
    - [Configuration](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#configuration)
+- [Troubleshooting](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#troubleshooting)
+   - [Troubleshooting errors from Galera](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#troubleshooting)
+   - [Troubleshooting errors from the Healthchecker](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#troubleshooting-errors-from-the-healthchecker)
 - [Contribution](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#contribution)
 - [License](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#licence)
 
