@@ -1,4 +1,8 @@
-docker-compose.yml
+# used for dev
+app/docker-compose.yml 
+
+
+
 .DS_Store
 
 
