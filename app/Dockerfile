@@ -8,17 +8,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN apt-get clean
 
+
+RUN mkdir -p /app/logs  
 WORKDIR /app
-RUN COPY ./requirements.txt /app/requirements.txt
+
 # Install python dependencies
+COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
 # Define non-root user
 USER nobody
 
 # Move scripts
-RUN mkdir -p /app/logs  
-
 COPY ./main.py /app/main.py
 COPY ./send_discord.py /app/send_discord.py
 
