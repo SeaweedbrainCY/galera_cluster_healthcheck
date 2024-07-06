@@ -9,6 +9,17 @@ This is a very basic docker container that helthcheck the nodes of a Mariadb Gal
 **Contributors :**
 
 ![GitHub Contributors Image](https://contrib.rocks/image?repo=seaweedbraincy/galera_cluster_healthcheck)
+
+**Summary :**
+- ![Features](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#features)
+   - ![Monitoring a specific node](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#monitoring-a-specific-node)
+   - ![Discord notification](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#discord-notification)
+- ![Installation](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#installation)
+   - ![Docker compose](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#docker-compose)
+   - ![Configuration](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#configuration)
+- ![Contribution](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#contribution)
+- ![License](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#licence)
+
 ## Features
 ### Monitoring a specific node
 Use the healthcheck to monitor a specific and retrieve metrics from Galera. To determine the health of your cluster, the script will monitor : 
