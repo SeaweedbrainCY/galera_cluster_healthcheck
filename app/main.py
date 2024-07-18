@@ -44,13 +44,15 @@ IS_ON_ERROR = False
 def log_message(error_msg, is_error=True,fatal=False, include_status=False):
     fire_available = can_fire_alert(is_error=is_error)
     if fire_available:
-        log_last_notif_date(is_error=is_error)
-        send_discord.send(error_msg, include_status, STATUS, is_error)
+        status_code = send_discord.send(error_msg, include_status, STATUS, is_error)
+        if status_code == 200:
+            log_last_notif_date(is_error=is_error)
         print(f"{datetime.now()} : Notification sent")
         print(f"{datetime.now()} : New status : {STATUS}")
     else:
         if  is_error:
-            print(f"{datetime.now()} : Cluster still in error state. No notification sent because of alert throttle.")
+            print(f"{datetime.now()} : Cluster still in error state. No notification sent because of alert throttle. Next check in {CHECK_INTERVAL} seconds.")
+            print(f"{datetime.now()} : {STATUS}")
         else :
             print(f"{datetime.now()} : Cluster health is normal. All checks passed. Next check in {CHECK_INTERVAL} seconds.")
     if fatal:
@@ -81,6 +83,7 @@ def can_fire_alert(is_error):
 
 if __name__ == "__main__":
     while True:
+        IS_ON_ERROR = False
         # Connect to MariaDB Platform
         try:
             conn = mariadb.connect(
