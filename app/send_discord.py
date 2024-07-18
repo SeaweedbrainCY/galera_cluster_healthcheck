@@ -32,3 +32,4 @@ def send(error_msg, include_status, status, is_error):
     webhook.add_embed(embed)
     response = webhook.execute()
     print(f"{datetime.now()} : Discord answered {response}")
+    return response.status_code
