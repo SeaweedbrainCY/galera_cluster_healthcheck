@@ -9,6 +9,20 @@ This is a very basic docker container that helthcheck the nodes of a Mariadb Gal
 **Contributors :**
 
 ![GitHub Contributors Image](https://contrib.rocks/image?repo=seaweedbraincy/galera_cluster_healthcheck)
+
+**Summary :**
+- [Features](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#features)
+   - [Monitoring a specific node](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#monitoring-a-specific-node)
+   - [Discord notification](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#discord-notification)
+- [Installation](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#installation)
+   - [Docker compose](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#docker-compose)
+   - [Configuration](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#configuration)
+- [Troubleshooting](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#troubleshooting)
+   - [Troubleshooting errors from Galera](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#troubleshooting)
+   - [Troubleshooting errors from the Healthchecker](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#troubleshooting-errors-from-the-healthchecker)
+- [Contribution](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#contribution)
+- [License](https://github.com/SeaweedbrainCY/galera_cluster_healthcheck?tab=readme-ov-file#licence)
+
 ## Features
 ### Monitoring a specific node
 Use the healthcheck to monitor a specific and retrieve metrics from Galera. To determine the health of your cluster, the script will monitor : 
@@ -42,7 +56,7 @@ version: '3.7'
 services:
   galera_health_check:
     container_name: galera_health_check
-    image: ghcr.io/seaweedbraincy/galera_cluster_healthcheck:b0.3
+    image: ghcr.io/seaweedbraincy/galera_cluster_healthcheck:latest
     user: 1000:1000
     security_opt:
       - no-new-privileges:true
@@ -75,6 +89,30 @@ You can use several env variable to configure the script :
 | NODE_NAME    |  **REQUIRED**    |Used to identify the node in the alert message. |
 | CLUSTER_MIN_SIZE    |  **REQUIRED**    |Minimum number of nodes in the cluster. This is used to determine if the cluster is in a degraded state|
 | WEBHOOK_URL    |  **REQUIRED**    |Discord webhook URL used to send notifications|
+
+## Troubleshooting
+### Troubleshooting errors from Galera
+This healthchecker monitor the 5 following variables:
+- wsrep_cluster_size
+- wsrep_cluster_status
+- wsrep_local_state_comment
+- wsrep_connected
+- wsrep_incoming_addresses
+
+In case of error with any of them, all the variable checks are reported in the notification message. Those one in error, would have the 'ERROR' mention, with a quick explanation of the issue.
+
+You can find further troublehsooting variable and more information in the ![official galera documentation](https://galeracluster.com/library/documentation/monitoring-cluster.html).
+
+### Troubleshooting errors from the Healthchecker
+Any time the healthchecker finds an error (while checking or if the check fails), you will recieve a notification. 
+
+**If and only if all checks pass, you will recieve a notification of normal state.**
+While you don't have any green notification following the error notification, that means that you still have to investigate an issue. 
+
+**All errors and messages are logged into Docker logs, they are not throttles. You can use :**
+```sh
+docker compose galera_cluster_healthcheck logs
+```
 
 
 ## Contribution
