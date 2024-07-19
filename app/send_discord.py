@@ -12,19 +12,20 @@ except Exception as e :
     sys.exit(1)
 
 
-def send(error_msg, include_status, status, is_error):
+def send(error_msg, include_status, status, is_error, node, role_to_mention):
     if is_error:
         color="f38989"
-        title="The galera cluster is in error state"
+        title=f"{node} : The galera cluster is in error state"
     else:
         color="78c1a3"
-        title="The galera cluster is back to a normal state"
+        title=f"{node} : The galera cluster is back to a normal state"
     
     if include_status:
         description = f"Current cluster state at {datetime.now()}"
     else:
         description = f"{error_msg} at {datetime.now()}"
-    webhook = DiscordWebhook(url=WEBHOOK_URL)
+    content = f"<@&{role_to_mention}>" if role_to_mention else ""
+    webhook = DiscordWebhook(url=WEBHOOK_URL, content=content)
     embed = DiscordEmbed(title=title, description=description, color=color)
     if include_status:
         for key in status:

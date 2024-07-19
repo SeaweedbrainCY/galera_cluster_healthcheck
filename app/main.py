@@ -12,6 +12,7 @@ try:
     DB_PORT = os.environ['DB_PORT'] if 'DB_PORT' in os.environ else 3306
     CHECK_INTERVAL = os.environ['CHECK_INTERVAL'] if 'CHECK_INTERVAL' in os.environ else 60
     ALERT_THROTTLE = int(os.environ['ALERT_THROTTLE']) if 'ALERT_THROTTLE' in os.environ else 10800 #3h in seconds
+    ROLE_TO_MENTION = os.environ['ROLE_TO_MENTION'] if 'ROLE_TO_MENTION' in os.environ else None
     NODE_NAME = os.environ['NODE_NAME'] 
     CLUSTER_MIN_SIZE = os.environ['CLUSTER_MIN_SIZE'] 
 except Exception as e :
@@ -44,7 +45,7 @@ IS_ON_ERROR = False
 def log_message(error_msg, is_error=True,fatal=False, include_status=False):
     fire_available = can_fire_alert(is_error=is_error)
     if fire_available:
-        status_code = send_discord.send(error_msg, include_status, STATUS, is_error)
+        status_code = send_discord.send(error_msg, include_status, STATUS, is_error, NODE_NAME, ROLE_TO_MENTION)
         if status_code == 200:
             log_last_notif_date(is_error=is_error)
         print(f"{datetime.now()} : Notification sent")
@@ -92,12 +93,13 @@ if __name__ == "__main__":
                 host=DB_HOST,
                 port=DB_PORT
             )
+            cur = conn.cursor()
         except mariadb.Error as e:
             log_message(f"Error connecting to MariaDB : {e}. Docker is going to restart now.", True)
 
 
         # Get Cursor
-        cur = conn.cursor()
+        
         try:
             cur.execute("SHOW GLOBAL STATUS LIKE 'wsrep_cluster_size';")
             size = cur.fetchone()
