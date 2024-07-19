@@ -71,6 +71,8 @@ services:
        NODE_NAME: <REPLACE_ME> # required. Used to identify the node in the alert message
        CLUSTER_MIN_SIZE: <REPLACE_ME> # required. Minimum number of nodes in the cluster, used to determine if the cluster is in a degraded state
        WEBHOOK_URL: <REPLACE_ME> # required. Discord webhook URL for notifications
+       ROLE_TO_MENTION: <REPLACE_ME> # option. Discord role ID to mention in the alert message. If not provided, no role will be mentioned
+
     volumes:
       - ./docker_logs:/app/logs 
     restart: always
@@ -89,6 +91,7 @@ You can use several env variable to configure the script :
 | NODE_NAME    |  **REQUIRED**    |Used to identify the node in the alert message. |
 | CLUSTER_MIN_SIZE    |  **REQUIRED**    |Minimum number of nodes in the cluster. This is used to determine if the cluster is in a degraded state|
 | WEBHOOK_URL    |  **REQUIRED**    |Discord webhook URL used to send notifications|
+| ROLE_TO_MENTION    | *optional*    |Discord **role ID** to mention in the alert message. If not provided, no role will be mentioned|
 
 ## Troubleshooting
 ### Troubleshooting errors from Galera
