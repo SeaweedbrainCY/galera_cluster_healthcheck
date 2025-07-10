@@ -1,7 +1,5 @@
 name: Docker Image Deployment
-permissions:
-  contents: read
-  packages: write
+
 on:
   push:
      tags: [ '*.*' ]
@@ -15,6 +13,9 @@ jobs:
     needs: [security_scan]
     name: Build and Publish Docker image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v3
     - name: Build
@@ -23,7 +24,7 @@ jobs:
             current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/')
             docker build -t $DOCKER_IMAGE_NAME:latest -t $DOCKER_IMAGE_NAME:$current_version .
     - name: Login to GitHub Container Registry
-      run: echo ${{  secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME }} --password-stdin
     - name: Push Docker image to GitHub Container Registry
       run: |
             current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/')
