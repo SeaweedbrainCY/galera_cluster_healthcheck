@@ -5,7 +5,11 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "docker" # See documentation for possible values
+    directory: "/app" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/app" # Location of workflow files
     schedule:
       interval: "weekly"
