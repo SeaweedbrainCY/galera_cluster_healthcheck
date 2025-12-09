@@ -25,25 +25,25 @@ func LoadConfig(logger *zap.Logger) *Config {
 	if os.Getenv("DB_USER") != "" {
 		config.Db_User = os.Getenv("DB_USER")
 	} else {
-		panic("DB_USER environment variable is required")
+		logger.Fatal("DB_USER environment variable is required")
 	}
 
 	if os.Getenv("DB_PASSWORD") != "" {
 		config.Db_Password = os.Getenv("DB_PASSWORD")
 	} else {
-		panic("DB_PASSWORD environment variable is required")
+		logger.Fatal("DB_PASSWORD environment variable is required")
 	}
 
 	if os.Getenv("DB_HOST") != "" {
 		config.Db_Host = os.Getenv("DB_HOST")
 	} else {
-		panic("DB_HOST environment variable is required")
+		logger.Fatal("DB_HOST environment variable is required")
 	}
 
 	if os.Getenv("DB_PORT") != "" {
 		db_port_int, err := strconv.Atoi(os.Getenv("DB_PORT"))
 		if err != nil {
-			panic("DB_PORT must be a valid integer")
+			logger.Fatal("DB_PORT must be a valid integer")
 		}
 		config.Db_Port = db_port_int
 	} else {
@@ -54,7 +54,7 @@ func LoadConfig(logger *zap.Logger) *Config {
 	if os.Getenv("CHECK_INTERVAL") != "" {
 		check_interval_int, err := strconv.Atoi(os.Getenv("CHECK_INTERVAL"))
 		if err != nil {
-			panic("CHECK_INTERVAL must be a valid integer")
+			logger.Fatal("CHECK_INTERVAL must be a valid integer")
 		}
 		config.Check_Interval = check_interval_int
 	} else {
@@ -65,7 +65,7 @@ func LoadConfig(logger *zap.Logger) *Config {
 	if os.Getenv("ALERT_THROTTLE") != "" {
 		alert_throttle_int, err := strconv.Atoi(os.Getenv("ALERT_THROTTLE"))
 		if err != nil {
-			panic("ALERT_THROTTLE must be a valid integer")
+			logger.Fatal("ALERT_THROTTLE must be a valid integer")
 		}
 		config.Alert_Throttle = alert_throttle_int
 	} else {
@@ -76,7 +76,7 @@ func LoadConfig(logger *zap.Logger) *Config {
 	if os.Getenv("DISCORD_WEBHOOK_URL") != "" {
 		config.Discord_Webhook_Url = os.Getenv("DISCORD_WEBHOOK_URL")
 	} else {
-		panic("DISCORD_WEBHOOK_URL environment variable is required")
+		logger.Fatal("DISCORD_WEBHOOK_URL environment variable is required")
 	}
 
 	if os.Getenv("DISCORD_ROLE_TO_MENTION") != "" {
@@ -89,7 +89,7 @@ func LoadConfig(logger *zap.Logger) *Config {
 	if os.Getenv("NODE_NAME") != "" {
 		config.MariaDB_Node_Name = os.Getenv("NODE_NAME")
 	} else {
-		panic("NODE_NAME environment variable is required")
+		logger.Fatal("NODE_NAME environment variable is required")
 	}
 
 	if os.Getenv("GALERA_CLUSTER_MIN_SIZE") != "" {
