@@ -8,6 +8,7 @@ import (
 
 	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/config"
 	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/healthcheck"
+	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 )
 
@@ -37,6 +38,13 @@ func main() {
 	logger.Info("Application started")
 
 	config := config.LoadConfig(logger)
+
+	logger.Info("Connecting to the database",
+		zap.String("Db_Host", config.Db_Host),
+		zap.Int("Db_Port", config.Db_Port),
+		zap.String("Db_User", config.Db_User),
+	)
+
 	dsn := config.Db_User + ":" + config.Db_Password + "@tcp(" + config.Db_Host + ":" + strconv.Itoa(config.Db_Port) + ")/"
 	db, err := sql.Open("mysql", dsn)
 
