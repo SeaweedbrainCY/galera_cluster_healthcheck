@@ -1,29 +1,29 @@
-FROM python:3.12-slim
-
-# Install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libmariadb3 \
-    libmariadb-dev \
-    gcc 
-
-RUN apt-get clean
+FROM golang:1.25 AS builder 
 
 
-RUN mkdir -p /app/logs  
+
+COPY ./app/config /app/config
+COPY ./app/discord /app/discord
+COPY ./app/healthcheck /app/healthcheck
+COPY ./app/notification /app/notification
+COPY ./app/main.go /app/main.go
+
 WORKDIR /app
 
-# Install python dependencies
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
+RUN go mod download
+ARG VERSION="dev"
 
-# Define non-root user
-USER nobody
-
-# Move scripts
-COPY ./main.py /app/main.py
-COPY ./send_discord.py /app/send_discord.py
+RUN CGO_ENABLED=0 GOOS=linux go build  -ldflags "-X main.Version=${VERSION}" -a -installsuffix cgo -o main .
 
 
+FROM gcr.io/distroless/static:nonroot
 
-# Run the script
-ENTRYPOINT ["python3" ,"-u", "main.py"]
+WORKDIR /app
+
+COPY --from=builder /app/main /app/healthchecker
+
+USER nonroot:nonroot
+
+EXPOSE 8080
+
+CMD ["./healthchecker"]
