@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/config"
+	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/discord"
 	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/healthcheck"
+	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/notification"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 )
@@ -102,6 +104,13 @@ func main() {
 			zap.String("NodeConnectivityMsg", healthCheck.NodeConnectivityMsg),
 			zap.String("IncomingAddressesMsg", healthCheck.IncomingAddressesMsg),
 		)
+		should_trigger_new_notif, err := notification.ShouldSendNewNotification(healthCheck, config, logger)
+		if err != nil && should_trigger_new_notif {
+			err := discord.SendNotification(config, healthCheck, logger)
+			if err != nil {
+				notification.UpdateLastNotificationStatus(healthCheck, logger)
+			}
+		}
 	}
 
 }
