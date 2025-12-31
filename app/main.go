@@ -14,6 +14,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var Version = "dev" // Will be set during build time
+
 func DatabaseHealthCheck(db *sql.DB, config *config.Config, logger *zap.Logger) (*healthcheck.HealthCheck, error) {
 	err := db.Ping()
 	if err != nil {
@@ -37,7 +39,7 @@ func DatabaseHealthCheck(db *sql.DB, config *config.Config, logger *zap.Logger) 
 func main() {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
-	logger.Info("Application started")
+	logger.Info("Application started", zap.String("version", Version))
 
 	config := config.LoadConfig(logger)
 
