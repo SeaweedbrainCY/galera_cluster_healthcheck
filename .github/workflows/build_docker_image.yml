@@ -198,7 +198,7 @@ jobs:
       name: Tag Docker image as latest
       needs: trivy_scan
       runs-on: ubuntu-latest
-      if: contains('dev', github.ref_name) == false
+      if: contains( github.ref_name, 'dev') == false
       steps:
         - name: Extract Git info
           id: vars
@@ -214,7 +214,26 @@ jobs:
             password: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Tag and push latest image
+          run: docker buildx imagetools create -t ghcr.io/${{ env.REPOSITORY_NAME }}:latest ghcr.io/${{ env.REPOSITORY_NAME }}:${{ env.VERSION }}
+            
+    tag_image_as_dev:
+      name: Tag Docker image as  dev
+      needs: trivy_scan
+      runs-on: ubuntu-latest
+      if: contains( github.ref_name, 'dev')
+      steps:
+        - name: Extract Git info
+          id: vars
           run: |
-            docker pull ghcr.io/${{ env.REPOSITORY_NAME }}:${{ env.VERSION }}
-            docker tag ghcr.io/${{ env.REPOSITORY_NAME }}:${{ env.VERSION }} ghcr.io/${{ env.REPOSITORY_NAME }}:latest
-            docker push ghcr.io/${{ env.REPOSITORY_NAME }}:latest
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "VERSION"=$(echo ${{ github.ref_name }} | sed 's/^v//')  >> $GITHUB_ENV 
+            
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Tag and push latest image
+          run:  docker buildx imagetools create -t ghcr.io/${{ env.REPOSITORY_NAME }}:dev ghcr.io/${{ env.REPOSITORY_NAME }}:${{ env.VERSION }}
