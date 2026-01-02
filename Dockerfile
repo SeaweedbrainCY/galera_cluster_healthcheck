@@ -7,6 +7,8 @@ COPY ./app/discord /app/discord
 COPY ./app/healthcheck /app/healthcheck
 COPY ./app/notification /app/notification
 COPY ./app/main.go /app/main.go
+COPY ./app/go.mod /app/go.mod
+COPY ./app/go.sum /app/go.sum
 
 WORKDIR /app
 
