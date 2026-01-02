@@ -97,9 +97,9 @@ jobs:
             build-args: |
               VERSION=${{ github.ref_name }}
             cache-from: type=gha
-            tags: ${{ steps.meta.outputs.tags }}
+            tags: ghcr.io/${{ env.REPOSITORY_NAME }}
             cache-to: type=gha,mode=max
-            platforms:  ghcr.io/${{ env.REPOSITORY_NAME }}
+            platforms:  ${{ env.PLATFORM }}
             outputs: type=image,push-by-digest=true,name-canonical=true,push=true
 
         - name: Export digest
