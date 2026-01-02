@@ -83,6 +83,8 @@ jobs:
             annotations: |
               org.opencontainers.image.description=A healthcheck and notification service for Galera Cluster
               org.opencontainers.image.source=https://github.com/seaweedbraincy/galera_cluster_healthcheck
+            tags: |
+              type=raw,value=${{env.ARCH}}
 
             
         
