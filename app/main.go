@@ -114,7 +114,7 @@ func main() {
 			zap.String("IncomingAddressesMsg", healthCheck.IncomingAddressesMsg),
 		)
 		should_trigger_new_notif, err := notification.ShouldSendNewNotification(healthCheck, config, logger)
-		if err != nil && should_trigger_new_notif {
+		if err == nil && should_trigger_new_notif {
 			err := discord.SendNotification(config, healthCheck, logger)
 			if err != nil {
 				notification.UpdateLastNotificationStatus(healthCheck, logger)
