@@ -99,6 +99,7 @@ jobs:
             build-args: |
               VERSION=${{ github.ref_name }}
             cache-from: type=gha
+            tags: ${{ steps.meta.outputs.tags }}
             cache-to: type=gha,mode=max
             platforms:  ${{ env.PLATFORM }}
             outputs: type=image,push-by-digest=true,name-canonical=true,push=true
