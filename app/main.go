@@ -12,6 +12,7 @@ import (
 	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/notification"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var Version = "dev" // Will be set during build time
@@ -37,7 +38,13 @@ func DatabaseHealthCheck(db *sql.DB, config *config.Config, logger *zap.Logger) 
 }
 
 func main() {
-	logger, _ := zap.NewProduction()
+	loggerConfig := zap.NewProductionConfig()                          // Start with production defaults
+	loggerConfig.Encoding = "console"                                  // Change the encoding to "console"
+	loggerConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder // Use ISO8601 time format
+	logger, err := loggerConfig.Build()
+	if err != nil {
+		panic("Failed to initialize logger: " + err.Error())
+	}
 	defer logger.Sync()
 	logger.Info("Application started", zap.String("version", Version))
 
