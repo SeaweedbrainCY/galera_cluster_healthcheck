@@ -104,7 +104,7 @@ jobs:
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
             platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
             arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
-            echo "VERSION"=$(echo ${{ github.ref_name }} | sed 's/^v//') 
+            echo "VERSION"=$(echo ${{ github.ref_name }} | sed 's/^v//')  >> $GITHUB_ENV 
 
         - uses: actions/checkout@v3
         - name: Install Trivy
@@ -129,7 +129,7 @@ jobs:
           id: vars
           run: |
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-            echo "VERSION"=$(echo ${{ github.ref_name }} | sed 's/^v//') 
+            echo "VERSION"=$(echo ${{ github.ref_name }} | sed 's/^v//')  >> $GITHUB_ENV 
             
         - name: Login to GHCR 
           uses: docker/login-action@v3
