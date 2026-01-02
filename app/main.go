@@ -116,7 +116,7 @@ func main() {
 		should_trigger_new_notif, err := notification.ShouldSendNewNotification(healthCheck, config, logger)
 		if err == nil && should_trigger_new_notif {
 			err := discord.SendNotification(config, healthCheck, logger)
-			if err != nil {
+			if err == nil {
 				notification.UpdateLastNotificationStatus(healthCheck, logger)
 			}
 		}
