@@ -33,8 +33,8 @@ jobs:
           run:  semgrep scan --error
 
     
-    build-and-publish:
-      name: Build and Publish Docker image
+    build:
+      name: Build Docker image
       needs: semgrep_scan
       strategy:
         fail-fast: false
@@ -74,28 +74,102 @@ jobs:
           uses: docker/metadata-action@v5
           with:
             images: ghcr.io/${{ env.REPOSITORY_NAME }}
-            tags: |
-              type=semver,pattern={{version}}
-              type=semver,pattern={{major}}.{{minor}}
+            labels: |
+              org.opencontainers.image.title=Galera Cluster Healthcheck
+              org.opencontainers.image.description=A healthcheck and notification service for Galera Cluster
+              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
+              org.opencontainers.image.url=https://github.com/seaweedbraincy/galera_cluster_healthcheck
+              maintainer=SeaweedbrainCY <contact@seaweedbrain.xyz>
+            annotations: |
+              org.opencontainers.image.description=A healthcheck and notification service for Galera Cluster
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/galera_cluster_healthcheck
+
             
         
-        - name: Build and push Docker image
+        - name: Build Docker image
           uses: docker/build-push-action@v5
+          id: build
           with:
             context: .
             file: ./Dockerfile
-            push: true
-            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+            annotations: ${{ steps.meta.outputs.annotations }}
             build-args: |
               VERSION=${{ github.ref_name }}
             cache-from: type=gha
             cache-to: type=gha,mode=max
             platforms:  ${{ env.PLATFORM }}
-            outputs: type=image,push=true
-    
+            outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+
+        - name: Export digest
+          run: |
+            mkdir -p ${{ runner.temp }}/digests
+            digest="${{ steps.build.outputs.digest }}"
+            touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+        - name: Upload digest
+          uses: actions/upload-artifact@v4
+          with:
+            name: api-digests-${{ env.PLATFORM_PAIR }}
+            path: ${{ runner.temp }}/digests/*
+            if-no-files-found: error
+            retention-days: 1
+
+    merge-manifests:
+      name: Merge manifests and publish multi-arch image
+      runs-on: ubuntu-latest
+      needs:
+        - build
+      steps:
+        - name: Extract Git commit
+          id: vars
+          run: |
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+
+        - name: Download digests
+          uses: actions/download-artifact@v4
+          with:
+            path: ${{ runner.temp }}/digests
+            pattern: frontend-digests-*
+            merge-multiple: true
+
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+
+        - name: Generate development docker metadata 
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}
+            tags: |
+              type=semver,pattern={{version}}
+            annotations: |
+              org.opencontainers.image.description=A healthcheck and notification service for Galera Cluster
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/galera_cluster_healthcheck
+
+
+        - name: Create manifest list and push
+          working-directory: ${{ runner.temp }}/digests
+          run: |
+            docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
+              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}@sha256:%s ' *) 
+
+        - name: Inspect image
+          run: |
+            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}:${{ steps.meta.outputs.version }}
+
     trivy_scan:
       name: Trivy Security Scan of the built image
-      needs: build-and-publish
+      needs: merge-manifests
       runs-on: ubuntu-latest
       steps:
         - name: Extract Git info
