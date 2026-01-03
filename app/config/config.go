@@ -18,9 +18,10 @@ type Config struct {
 	Discord_Role_To_Mention     string
 	MariaDB_Node_Name           string
 	Galera_Cluster_Minimum_Size int
+	Version                     string
 }
 
-func LoadConfig(logger *zap.Logger) *Config {
+func LoadConfig(logger *zap.Logger, version string) *Config {
 	var config Config
 	if os.Getenv("DB_USER") != "" {
 		config.Db_User = os.Getenv("DB_USER")
@@ -102,6 +103,8 @@ func LoadConfig(logger *zap.Logger) *Config {
 		config.Galera_Cluster_Minimum_Size = 3
 		logger.Info("GALERA_CLUSTER_MIN_SIZE not set, using default 3")
 	}
+
+	config.Version = version
 
 	logger.Info("Configuration loaded successfully")
 

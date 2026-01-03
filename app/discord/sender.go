@@ -17,6 +17,10 @@ func SendNotification(config *config.Config, healthCheck *healthcheck.HealthChec
 	embed.Color = 16528693
 	embed.Timestamp = time.Now().Format(time.RFC3339)
 
+	embed.Footer = &EmbedFooter{
+		Text: "Galera Cluster Healthcheck - " + config.Version,
+	}
+
 	if healthCheck.IsHealthy {
 		embed.Title = config.MariaDB_Node_Name + ": The galera cluster is healthy again"
 		embed.Color = 1220903
