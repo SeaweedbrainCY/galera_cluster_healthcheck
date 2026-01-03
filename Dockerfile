@@ -26,6 +26,4 @@ COPY --from=builder /app/main /app/healthchecker
 
 USER nonroot:nonroot
 
-EXPOSE 8080
-
 CMD ["./healthchecker"]
