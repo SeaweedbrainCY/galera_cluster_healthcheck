@@ -2,7 +2,9 @@ package healthcheck
 
 import (
 	"database/sql"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/SeaweedbrainCY/galera_cluster_healthcheck/config"
 	"go.uber.org/zap"
@@ -117,4 +119,19 @@ func (healthCheck *HealthCheck) CheckIncomingAddresses(db *sql.DB, config *confi
 	}
 
 	healthCheck.IncomingAddressesMsg = "INFO. Connected addresses are: " + addresses
+}
+
+func UpdateLastHealthStatus(isHealthy bool, logger *zap.Logger) error {
+	last_health_file_path := "./logs/last_health_status"
+	status := "OK"
+	if !isHealthy {
+		status = "KO"
+	}
+	status = status + "|" + time.Now().Format(time.RFC3339)
+	err := os.WriteFile(last_health_file_path, []byte(status), 0644)
+	if err != nil {
+		logger.Error("Failed to update last health status file", zap.Error(err))
+		return err
+	}
+	return nil
 }

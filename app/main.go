@@ -48,7 +48,7 @@ func main() {
 	defer logger.Sync()
 	logger.Info("Application started", zap.String("version", Version))
 
-	config := config.LoadConfig(logger)
+	config := config.LoadConfig(logger, Version)
 
 	logger.Info("Connecting to the database",
 		zap.String("Db_Host", config.Db_Host),
@@ -113,6 +113,7 @@ func main() {
 			zap.String("NodeConnectivityMsg", healthCheck.NodeConnectivityMsg),
 			zap.String("IncomingAddressesMsg", healthCheck.IncomingAddressesMsg),
 		)
+		healthcheck.UpdateLastHealthStatus(healthCheck.IsHealthy, logger)
 		should_trigger_new_notif, err := notification.ShouldSendNewNotification(healthCheck, config, logger)
 		if err == nil && should_trigger_new_notif {
 			err := discord.SendNotification(config, healthCheck, logger)
