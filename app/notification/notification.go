@@ -49,8 +49,24 @@ func ShouldSendNewNotification(healthCheck *healthcheck.HealthCheck, config *con
 	}
 
 	time_since_last_notification := time.Since(last_notification_date).Seconds()
-
-	return ((last_notification_status == "OK" && !healthCheck.IsHealthy) || (last_notification_status == "KO" && healthCheck.IsHealthy)) && time_since_last_notification > float64(config.Alert_Throttle), nil
+	if (last_notification_status == "OK" && !healthCheck.IsHealthy) || (last_notification_status == "KO" && healthCheck.IsHealthy) {
+		// Status changed, send notification
+		return true, nil
+	} else {
+		if !healthCheck.IsHealthy && time_since_last_notification >= float64(config.Alert_Throttle) {
+			// Still unhealthy, but throttle time passed, send notification
+			return true, nil
+		} else if !healthCheck.IsHealthy {
+			// Still unhealthy, but throttle time not passed, do not send notification
+			logger.Info("Not sending notification due to alert throttle",
+				zap.Float64("time_since_last_notification_seconds", time_since_last_notification),
+				zap.Int("alert_throttle_seconds", config.Alert_Throttle),
+			)
+			return false, nil
+		}
+		// Healthy and no status change, do not send notification
+		return false, nil
+	}
 }
 
 func UpdateLastNotificationStatus(healthCheck *healthcheck.HealthCheck, logger *zap.Logger) error {
@@ -68,3 +84,4 @@ func UpdateLastNotificationStatus(healthCheck *healthcheck.HealthCheck, logger *
 	}
 	return nil
 }
+
