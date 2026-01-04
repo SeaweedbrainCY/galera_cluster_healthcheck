@@ -38,9 +38,9 @@ func DatabaseHealthCheck(db *sql.DB, config *config.Config, logger *zap.Logger) 
 }
 
 func main() {
-	loggerConfig := zap.NewProductionConfig()                          // Start with production defaults
-	loggerConfig.Encoding = "console"                                  // Change the encoding to "console"
-	loggerConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder // Use ISO8601 time format
+	loggerConfig := zap.NewProductionConfig()
+	loggerConfig.Encoding = "console"
+	loggerConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	logger, err := loggerConfig.Build()
 	if err != nil {
 		panic("Failed to initialize logger: " + err.Error())
@@ -75,6 +75,8 @@ func main() {
 
 	logger.Info("Successfully connected to the database")
 
+	notification.InitLastNotificationFile(logger)
+
 	ticker := time.NewTicker(time.Duration(config.Check_Interval) * time.Second)
 	defer ticker.Stop()
 
@@ -84,25 +86,61 @@ func main() {
 		if err != nil {
 			if err.Error() == "DatabaseConnectionFailed" {
 				db.Close()
+				logger.Info("Attempting to reconnect to the database")
 				db, err = sql.Open("mysql", dsn)
 				if err != nil {
 					logger.Error("Reconnection to database failed", zap.Error(err))
-					continue
-				}
-				err = db.Ping()
-				if err != nil {
-					logger.Error("Database ping after reconnection failed", zap.Error(err))
-					continue
-				}
-				logger.Info("Reconnected to the database successfully")
-				healthCheck, err = DatabaseHealthCheck(db, config, logger)
-				if err != nil {
-					logger.Error("Health check failed after reconnection", zap.Error(err))
-					continue
+
+					healthCheck = &healthcheck.HealthCheck{
+						IsHealthy:            false,
+						ClusterSizeMsg:       "UNKNOWN",
+						ClusterStatusMsg:     "UNKNOWN",
+						NodeStatusMsg:        "UNKNOWN",
+						NodeConnectivityMsg:  "UNKNOWN",
+						IncomingAddressesMsg: "UNKNOWN",
+						OptionalInfoMsg:      "Reconnection to database failed. Error : " + err.Error(),
+					}
+				} else {
+					err = db.Ping()
+					if err != nil {
+						logger.Error("Connection to database re-established successfully, but the database doesn't ping.", zap.Error(err))
+						healthCheck = &healthcheck.HealthCheck{
+							IsHealthy:            false,
+							ClusterSizeMsg:       "UNKNOWN",
+							ClusterStatusMsg:     "UNKNOWN",
+							NodeStatusMsg:        "UNKNOWN",
+							NodeConnectivityMsg:  "UNKNOWN",
+							IncomingAddressesMsg: "UNKNOWN",
+							OptionalInfoMsg:      "Connection to database re-established successfully, but the database doesn't ping. Error : " + err.Error(),
+						}
+					} else {
+						logger.Info("Reconnected to the database successfully")
+						healthCheck, err = DatabaseHealthCheck(db, config, logger)
+						if err != nil {
+							logger.Error("Health check failed after reconnection", zap.Error(err))
+							healthCheck = &healthcheck.HealthCheck{
+								IsHealthy:            false,
+								ClusterSizeMsg:       "UNKNOWN",
+								ClusterStatusMsg:     "UNKNOWN",
+								NodeStatusMsg:        "UNKNOWN",
+								NodeConnectivityMsg:  "UNKNOWN",
+								IncomingAddressesMsg: "UNKNOWN",
+								OptionalInfoMsg:      "Health check failed. Error : " + err.Error(),
+							}
+						}
+					}
 				}
 			} else {
 				logger.Error("Health check failed", zap.Error(err))
-				continue
+				healthCheck = &healthcheck.HealthCheck{
+					IsHealthy:            false,
+					ClusterSizeMsg:       "UNKNOWN",
+					ClusterStatusMsg:     "UNKNOWN",
+					NodeStatusMsg:        "UNKNOWN",
+					NodeConnectivityMsg:  "UNKNOWN",
+					IncomingAddressesMsg: "UNKNOWN",
+					OptionalInfoMsg:      "Health check failed. Error : " + err.Error(),
+				}
 			}
 		}
 		logger.Info("Health performed",
@@ -112,6 +150,7 @@ func main() {
 			zap.String("NodeStatusMsg", healthCheck.NodeStatusMsg),
 			zap.String("NodeConnectivityMsg", healthCheck.NodeConnectivityMsg),
 			zap.String("IncomingAddressesMsg", healthCheck.IncomingAddressesMsg),
+			zap.String("OptionalInfoMsg", healthCheck.OptionalInfoMsg),
 		)
 		healthcheck.UpdateLastHealthStatus(healthCheck.IsHealthy, logger)
 		should_trigger_new_notif, err := notification.ShouldSendNewNotification(healthCheck, config, logger)
@@ -122,5 +161,6 @@ func main() {
 			}
 		}
 	}
+	logger.Info("Application stopped", zap.String("version", Version))
 
 }
