@@ -26,7 +26,7 @@ func SendNotification(config *config.Config, healthCheck *healthcheck.HealthChec
 		embed.Color = 1220903
 	}
 
-	embed.Description = "Current galera cluster health at " + time.Now().Format(time.RFC1123)
+	embed.Description = "Current galera cluster health at " + time.Now().Format(time.RFC1123) + "\n\n" + healthCheck.OptionalInfoMsg
 	embed.Fields = []EmbedField{
 		{
 			Name:   "Cluster Size Check",

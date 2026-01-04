@@ -17,6 +17,7 @@ type HealthCheck struct {
 	NodeStatusMsg        string
 	NodeConnectivityMsg  string
 	IncomingAddressesMsg string
+	OptionalInfoMsg      string
 }
 
 func (healthCheck *HealthCheck) CheckClusterSize(db *sql.DB, config *config.Config, clusterSize int, logger *zap.Logger) {
