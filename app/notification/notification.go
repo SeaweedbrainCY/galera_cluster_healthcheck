@@ -85,3 +85,19 @@ func UpdateLastNotificationStatus(healthCheck *healthcheck.HealthCheck, logger *
 	return nil
 }
 
+func InitLastNotificationFile(logger *zap.Logger) {
+	last_notification_file_path := "./logs/last_notification_date"
+	file, err := os.Open(last_notification_file_path)
+	if os.IsNotExist(err) {
+		epoch := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
+		err := os.WriteFile(last_notification_file_path, []byte("OK|"+epoch.Format(time.RFC3339)), 0644)
+		if err != nil {
+			logger.Fatal("Failed to initialize last notification file", zap.Error(err))
+		} else {
+			logger.Info("Initialized last notification file with default values")
+		}
+	} else if err != nil {
+		logger.Fatal("Failed to open last notification file", zap.Error(err))
+	}
+	defer file.Close()
+}
