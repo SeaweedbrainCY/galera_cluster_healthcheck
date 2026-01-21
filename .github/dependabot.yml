@@ -2,7 +2,7 @@
 version: 2
 updates:
   - package-ecosystem: "docker" 
-    directory: "/app" 
+    directory: "/" 
     schedule:
       interval: "weekly"
   - package-ecosystem: "gomod"
