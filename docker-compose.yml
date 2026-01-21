@@ -14,11 +14,11 @@ services:
        DB_HOST: <REPLACE_ME> # required
        DB_PORT: 3306 # optional. Default is 3306
        CHECK_INTERVAL: 60 # optional. Default is 60. Healthcheck interval in seconds
-       ALERT_THROTTLE: 10800 # optional. Default is 10800s (3h). Amount of time in senconds between 2 consecutive alerts
+       ALERT_THROTTLE: 10800 # optional. Default is 10800s (3h). Amount of time in senconds between 2 consecutive ERROR alerts
        NODE_NAME: <REPLACE_ME> # required. Used to identify the node in the alert message
        CLUSTER_MIN_SIZE: <REPLACE_ME> # required. Minimum number of nodes in the cluster, used to determine if the cluster is in a degraded state
-       WEBHOOK_URL: <REPLACE_ME> # required. Discord webhook URL for notifications
-       ROLE_TO_MENTION: <REPLACE_ME> # option. Discord role ID to mention in the alert message. If not provided, no role will be mentioned
+       DISCORD_WEBHOOK_URL: <REPLACE_ME> # required. Discord webhook URL for notifications
+       DISCORD_ROLE_TO_MENTION: <REPLACE_ME> # option. Discord role ID to mention in the alert message. If not provided, no role will be mentioned
     volumes:
       - ./docker_logs:/app/logs 
     restart: always

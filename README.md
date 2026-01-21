@@ -67,11 +67,11 @@ services:
        DB_HOST: <REPLACE_ME> # required
        DB_PORT: 3306 # optional. Default is 3306
        CHECK_INTERVAL: 60 # optional. Default is 60. Healthcheck interval in seconds
-       ALERT_THROTTLE: 10800 # optional. Default is 10800s (3h). Amount of time in senconds between 2 consecutive alerts
+       ALERT_THROTTLE: 10800 # optional. Default is 10800s (3h). Amount of time in senconds between 2 consecutive ERROR alerts
        NODE_NAME: <REPLACE_ME> # required. Used to identify the node in the alert message
        CLUSTER_MIN_SIZE: <REPLACE_ME> # required. Minimum number of nodes in the cluster, used to determine if the cluster is in a degraded state
-       WEBHOOK_URL: <REPLACE_ME> # required. Discord webhook URL for notifications
-       ROLE_TO_MENTION: <REPLACE_ME> # option. Discord role ID to mention in the alert message. If not provided, no role will be mentioned
+       DISCORD_WEBHOOK_URL: <REPLACE_ME> # required. Discord webhook URL for notifications
+       DISCORD_ROLE_TO_MENTION: <REPLACE_ME> # option. Discord role ID to mention in the alert message. If not provided, no role will be mentioned
 
     volumes:
       - ./docker_logs:/app/logs 
@@ -86,12 +86,12 @@ You can use several env variable to configure the script :
 | DB_PASSWORD |  **REQUIRED**     |Password of the user used to connect to the database.|
 | DB_HOST    |  **REQUIRED**    | Mariadb host|
 | DB_PORT    | *optional*    |Port used by mariadb. Default value : 3306|
-| ALERT_THROTTLE    | *optional* | Amount of time in senconds between 2 consecutive alerts. Default value : 10800s (3h).|
+| ALERT_THROTTLE    | *optional* | Amount of time in senconds between 2 consecutive ERROR alerts. Default value : 10800s (3h).|
 | CHECK_INTERVAL  | *optional* | Healthcheck interval in seconds. Default value: 60|
 | NODE_NAME    |  **REQUIRED**    |Used to identify the node in the alert message. |
 | CLUSTER_MIN_SIZE    |  **REQUIRED**    |Minimum number of nodes in the cluster. This is used to determine if the cluster is in a degraded state|
-| WEBHOOK_URL    |  **REQUIRED**    |Discord webhook URL used to send notifications|
-| ROLE_TO_MENTION    | *optional*    |Discord **role ID** to mention in the alert message. If not provided, no role will be mentioned|
+| DISCORD_WEBHOOK_URL    |  **REQUIRED**    |Discord webhook URL used to send notifications|
+| DISCORD_ROLE_TO_MENTION    | *optional*    |Discord **role ID** to mention in the alert message. If not provided, no role will be mentioned|
 
 ## Troubleshooting
 ### Troubleshooting errors from Galera
